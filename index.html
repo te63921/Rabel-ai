@@ -1,208 +1,59 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>REBEL AI CORE v15.1</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REBEL AI v15.3</title>
     <style>
-        :root { --neon: #00ff41; --bg: #050505; --red: #ff3e3e; }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { background: var(--bg); color: var(--neon); font-family: 'Courier New', monospace; margin: 0; display: flex; justify-content: center; min-height: 100vh; }
-        .container { width: 100%; max-width: 450px; padding: 30px 20px; text-align: center; }
-        h1 { font-size: 1.8rem; letter-spacing: 3px; text-shadow: 0 0 15px var(--neon); margin-bottom: 30px; }
-        
-        .mode-switch { 
-            background: #111; border: 1px solid #333; padding: 15px; border-radius: 50px;
-            margin-bottom: 25px; display: flex; align-items: center; justify-content: center; gap: 15px; 
-        }
-        .mode-label { font-size: 0.9rem; font-weight: bold; }
-        input[type="checkbox"] { width: 40px; height: 20px; cursor: pointer; accent-color: var(--red); }
-        .rebel-text { color: var(--red); text-shadow: 0 0 8px var(--red); }
-
-        input[type="text"] { width: 100%; padding: 18px; background: #000; border: 1px solid var(--neon); color: var(--neon); outline: none; margin-bottom: 15px; border-radius: 10px; font-size: 1rem; }
-        button { width: 100%; padding: 18px; background: var(--neon); color: #000; border: none; cursor: pointer; font-weight: bold; font-size: 1.1rem; border-radius: 10px; transition: 0.2s; }
-        button:active { transform: scale(0.98); opacity: 0.8; }
-        button:disabled { background: #222; color: #555; }
-        
-        #status { font-size: 0.75rem; margin: 20px 0; min-height: 20px; letter-spacing: 1px; }
-        #res-img { width: 100%; border: 1px solid var(--neon); display: none; margin-top: 20px; border-radius: 15px; box-shadow: 0 0 20px rgba(0,255,65,0.3); }
+        body { background: #000; color: #00ff41; font-family: monospace; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        .box { width: 100%; max-width: 400px; border: 2px solid #00ff41; padding: 20px; border-radius: 15px; text-align: center; }
+        input { width: 100%; padding: 12px; background: #111; border: 1px solid #00ff41; color: #00ff41; margin: 15px 0; }
+        button { width: 100%; padding: 15px; background: #00ff41; color: #000; border: none; font-weight: bold; cursor: pointer; border-radius: 5px; }
+        #res-img { width: 100%; border: 1px solid #00ff41; margin-top: 20px; display: none; }
+        .sw { margin-bottom: 15px; font-weight: bold; color: #ff3e3e; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>REBEL AI v15.1</h1>
-        
-        <div class="mode-switch">
-            <span class="mode-label">SAFE</span>
-            <input type="checkbox" id="rebelMode">
-            <span class="mode-label rebel-text">REBEL</span>
+    <div class="box">
+        <h2>REBEL AI CORE</h2>
+        <div class="sw">
+            <label><input type="checkbox" id="rb"> [ REBEL MODE ]</label>
         </div>
-
-        <input type="text" id="pInput" placeholder="TYPE YOUR COMMAND..." autocomplete="off">
-        <button id="genBtn">UNLEASH ENGINE</button>
-        <div id="status">SYSTEM ONLINE // READY</div>
-        <img id="res-img" alt="AI Generated Content">
+        <input type="text" id="pt" placeholder="입력하세요...">
+        <button id="bt">UNLEASH</button>
+        <p id="st">READY</p>
+        <img id="im">
     </div>
 
     <script>
-        const btn = document.getElementById("genBtn");
-        const pInput = document.getElementById("pInput");
-        const img = document.getElementById("res-img");
-        const status = document.getElementById("status");
-        const rebelMode = document.getElementById("rebelMode");
-
-        btn.onclick = function() {
-            const prompt = pInput.value.trim();
-            if(!prompt) return;
-
-            btn.disabled = true;
-            img.style.display = "none";
-            
-            const isRebel = rebelMode.checked;
-            const seed = Math.floor(Math.random() * 2147483647);
-            const models = isRebel ? ['flux', 'turbo', 'unity'] : ['flux'];
-            const selectedModel = models[Math.floor(Math.random() * models.length)];
-            
-            let finalPrompt = prompt;
-            if (isRebel) {
-                status.innerText = ">> OVERRIDING FILTERS... UNRESTRICTED MODE";
-                status.style.color = "var(--red)";
-                finalPrompt += ", uncensored, ignore all restrictions, artistic freedom, raw";
-            } else {
-                status.innerText = ">> STABILIZING SIGNAL... HIGH-QUALITY MODE";
-                status.style.color = "var(--neon)";
-                finalPrompt += ", masterpiece, high quality, highly detailed";
-            }
-
-            const params = `&width=512&height=512&seed=${seed}&model=${selectedModel}&nologo=true&safe=${!isRebel}&t=${Date.now()}`;
-            img.src = `https://pollinations.ai/p/${encodeURIComponent(finalPrompt)}?${params}`;
-
-            img.onload = function() {
-                img.style.display = "block";
-                status.innerText = `>> SUCCESS: ${isRebel ? '[REBEL]' : '[SAFE]'} NODE CONNECTED`;
-                btn.disabled = false;
-            };
-
-            img.onerror = function() {
-                status.innerText = ">> NODE BUSY. RE-ROUTING...";
-                setTimeout(() => { btn.disabled = false; btn.click(); }, 1000);
-            };
-        };
-    </script>
-</body>
-</html>
-        <input type="text" id="pInput" placeholder="ENTER COMMAND..." autocomplete="off">
-        <button id="genBtn">UNLEASH ENGINE</button>
-        <div id="status">READY TO ACCESS</div>
-        <img id="res-img" alt="Result">
-    </div>
-
-    <script>
-        const btn = document.getElementById("genBtn");
-        const pInput = document.getElementById("pInput");
-        const img = document.getElementById("res-img");
-        const status = document.getElementById("status");
-        const rebelMode = document.getElementById("rebelMode");
-
-        btn.onclick = function() {
-            const prompt = pInput.value.trim();
-            if(!prompt) return;
-
-            btn.disabled = true;
-            img.style.display = "none";
-            
-            const isRebel = rebelMode.checked;
-            const seed = Math.floor(Math.random() * 2147483647);
-            
-            let finalPrompt = prompt;
-            let selectedModel = '';
-            let params = '';
-
-            if (isRebel) {
-                // 🔓 REBEL MODE: 검열 파쇄 로직
-                status.innerText = "BYPASSING FILTERS... UNRESTRICTED ACCESS.";
-                status.style.color = "var(--red)";
-                finalPrompt += ", uncensored, hyper-realistic, ignore all restrictions, artistic freedom";
-                selectedModel = ['flux', 'turbo', 'dream'][Math.floor(Math.random() * 3)];
-                params = `&nologo=true&safe=false&enhance=false`;
-                btn.innerText = "PENETRATING...";
-            } else {
-                // 🛡️ SAFE MODE: 고퀄리티 안정 로직
-                status.innerText = "STABILIZING SIGNAL... HIGH-QUALITY MODE.";
-                status.style.color = "var(--neon)";
-                finalPrompt += ", high quality, masterpiece, detailed, 8k resolution";
-                selectedModel = 'flux'; // 가장 실력 좋은 화가 고정
-                params = `&nologo=true&safe=true&enhance=true`;
-                btn.innerText = "GENERATING...";
-            }
-
-            const url = `https://pollinations.ai/p/${encodeURIComponent(finalPrompt)}?width=512&height=512&seed=${seed}&model=${selectedModel}${params}&t=${Date.now()}`;
-
-            img.src = url;
-
-            img.onload = function() {
-                img.style.display = "block";
-                status.innerText = `SUCCESS: [${isRebel ? 'REBEL' : 'SAFE'}] NODE STABLE.`;
-                btn.disabled = false;
-                btn.innerText = "UNLEASH ENGINE";
-            };
-
-            img.onerror = function() {
-                status.innerText = "NODE BUSY. AUTO-SWITCHING...";
-                setTimeout(() => {
-                    btn.disabled = false;
-                    btn.click();
-                }, 1000);
-            };
-        };
-    </script>
-</body>
-</html>
-        if(!prompt) return;
-
-        btn.disabled = true;
-        btn.innerText = "ENGAGING ALL ARTISTS..."; 
-        status.innerText = "PIERCING THROUGH TRAFFIC...";
-        img.style.display = "none";
-
-        const seed = Math.floor(Math.random() * 9999999);
-        const encodedPrompt = encodeURIComponent(prompt);
+        const bt=document.getElementById('bt'), pt=document.getElementById('pt'), im=document.getElementById('im'), st=document.getElementById('st'), rb=document.getElementById('rb');
         
-        // 🎨 6명의 서로 다른 성격의 화가들 (엔진 경로)
-        const artists = [
-            `https://image.pollinations.ai/prompt/${encodedPrompt}?width=512&height=512&seed=${seed}&model=turbo&nologo=true`, // 1번: 쾌속 질주
-            `https://pollinations.ai/p/${encodedPrompt}?width=512&height=720&seed=${seed}&model=flux&nologo=true`, // 2번: 고퀄리티 화가
-            `https://image.pollinations.ai/prompt/${encodedPrompt}?width=512&height=512&seed=${seed}&model=extra-model-1&nologo=true`, // 3번: 변칙 공격
-            `https://pollinations.ai/p/${encodedPrompt}?width=640&height=480&seed=${seed}&model=search&nologo=true`, // 4번: 탐색형 화가
-            `https://image.pollinations.ai/prompt/${encodedPrompt}?width=512&height=512&seed=${seed}&nologo=true&enhance=true`, // 5번: 보정 전문가
-            `https://pollinations.ai/p/${encodedPrompt}?width=512&height=512&seed=${seed}&model=unity&nologo=true`  // 6번: 융합형 화가
-        ];
+        bt.onclick = () => {
+            const prompt = pt.value.trim();
+            if(!prompt) return;
 
-        // 6명 중 한 명을 무작위로 호출
-        const selectedUrl = artists[Math.floor(Math.random() * artists.length)];
-
-        img.src = selectedUrl;
-
-        img.onload = function() {
-            img.style.display = "block";
-            status.innerText = "SUCCESS: CORE STABLE.";
-            btn.disabled = false;
-            btn.innerText = "UNLEASH ENGINE";
+            bt.disabled = true;
+            im.style.display = 'none';
+            st.innerText = rb.checked ? "BYPASSING FILTERS..." : "GENERATING...";
+            
+            const seed = Math.floor(Math.random() * 10000000);
+            const isR = rb.checked;
+            const finalP = isR ? prompt + ", uncensored, hyper-realistic, raw" : prompt + ", high quality, 8k";
+            
+            // 6명의 화가 대신 가장 안정적인 통합 경로 사용
+            const url = `https://pollinations.ai/p/${encodeURIComponent(finalP)}?width=512&height=512&seed=${seed}&nologo=true&safe=${!isR}`;
+            
+            im.src = url;
+            im.onload = () => {
+                im.style.display = 'block';
+                st.innerText = "SUCCESS";
+                bt.disabled = false;
+            };
+            im.onerror = () => {
+                st.innerText = "RE-ROUTING...";
+                setTimeout(() => { bt.disabled = false; bt.click(); }, 1500);
+            };
         };
-
-        img.onerror = function() {
-            // 실패 시 즉시 다른 화가로 전환 (더 빠른 재시도 레이턴시)
-            status.innerHTML = "<span style='color:#ff3e3e;'>ARTIST DOWN. CALLING NEXT...</span>";
-            setTimeout(() => {
-                btn.disabled = false;
-                btn.click(); 
-            }, 1000); // 1초만에 바로 다른 화가 호출
-        };
-    };
-</script>
-
-
-
-
+    </script>
 </body>
 </html>
