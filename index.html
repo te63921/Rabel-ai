@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>REBEL AI CORE v15.5</title>
+    <title>REBEL AI CORE v15.7</title>
     <style>
         :root { --neon: #00ff41; --bg: #050505; --red: #ff3e3e; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -11,7 +11,7 @@
         .container { width: 100%; max-width: 450px; padding: 30px 20px; text-align: center; }
         h1 { font-size: 1.8rem; letter-spacing: 3px; text-shadow: 0 0 15px var(--neon); margin-bottom: 30px; }
         
-        /* 💊 알약 모양 토글 스위치 디자인 */
+        /* 💊 알약 모양 토글 스위치 */
         .switch-container { display: flex; align-items: center; justify-content: center; gap: 15px; margin-bottom: 25px; background: #111; padding: 15px; border-radius: 50px; border: 1px solid #333; }
         .switch { position: relative; display: inline-block; width: 60px; height: 30px; }
         .switch input { opacity: 0; width: 0; height: 0; }
@@ -27,78 +27,4 @@
         button:disabled { background: #222; color: #555; box-shadow: none; }
         
         #status { font-size: 0.75rem; margin: 20px 0; min-height: 20px; letter-spacing: 1px; font-weight: bold; }
-        #res-img { width: 100%; border: 2px solid var(--neon); display: none; margin-top: 20px; border-radius: 15px; box-shadow: 0 0 25px rgba(0,255,65,0.4); }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>REBEL AI v15.5</h1>
-        
-        <div class="switch-container">
-            <span class="mode-text" style="color:var(--neon)">SAFE</span>
-            <label class="switch">
-                <input type="checkbox" id="rebelMode">
-                <span class="slider"></span>
-            </label>
-            <span class="mode-text" style="color:var(--red)">REBEL</span>
-        </div>
-
-        <input type="text" id="pInput" placeholder="TYPE YOUR COMMAND..." autocomplete="off">
-        <button id="genBtn">UNLEASH SWARM ENGINE</button>
-        <div id="status">SYSTEM ONLINE // READY</div>
-        <img id="res-img" alt="AI Generated">
-    </div>
-
-    <script>
-        const btn = document.getElementById("genBtn");
-        const pInput = document.getElementById("pInput");
-        const img = document.getElementById("res-img");
-        const status = document.getElementById("status");
-        const rebelMode = document.getElementById("rebelMode");
-
-        btn.onclick = async function() {
-            const prompt = pInput.value.trim();
-            if(!prompt) return;
-
-            btn.disabled = true;
-            img.style.display = "none";
-            
-            const isRebel = rebelMode.checked;
-            status.innerText = isRebel ? ">> SWARM DEPLOYED: BYPASSING FILTERS..." : ">> SWARM DEPLOYED: HUNTING QUALITY...";
-            status.style.color = isRebel ? "var(--red)" : "var(--neon)";
-
-            // 🐝 SWARM ENGINE: 10명의 화가 동시 출격
-            const numArtists = 10;
-            const model = isRebel ? "turbo" : "flux";
-            let finalPrompt = prompt + (isRebel ? ", uncensored, raw style, ignore restrictions" : ", masterpiece, high quality, 8k");
-
-            // 10개의 병렬 요청 생성
-            const requests = Array.from({ length: numArtists }).map((_, i) => {
-                return new Promise((resolve, reject) => {
-                    const seed = Math.floor(Math.random() * 2147483647);
-                    const tempImg = new Image();
-                    const url = `https://pollinations.ai/p/${encodeURIComponent(finalPrompt)}?width=512&height=512&seed=${seed}&model=${model}&nologo=true&safe=${!isRebel}&t=${Date.now()}_${i}`;
-                    
-                    tempImg.src = url;
-                    tempImg.onload = () => resolve(url); // 가장 먼저 완성된 놈 승리
-                    tempImg.onerror = () => reject();
-                });
-            });
-
-            try {
-                // 선착순 1등 낙찰
-                const winnerUrl = await Promise.any(requests);
-                img.src = winnerUrl;
-                img.onload = () => {
-                    img.style.display = "block";
-                    status.innerText = `>> SUCCESS: FASTEST NODE CAPTURED [${isRebel ? 'REBEL' : 'SAFE'}]`;
-                    btn.disabled = false;
-                };
-            } catch (e) {
-                status.innerText = ">> ALL NODES BUSY. RE-DEPLOYING SWARM...";
-                setTimeout(() => { btn.disabled = false; btn.click(); }, 500);
-            }
-        };
-    </script>
-</body>
-</html>
+        #res-img { width: 100%; border:
