@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>REBEL AI v16.5 VIP OVERLORD</title>
+    <title>REBEL AI v16.7 ULTIMATE BREAKER</title>
     <style>
-        :root { --neon: #00ff41; --bg: #050505; --red: #ff3e3e; --sky: #00d4ff; }
+        :root { --neon: #00ff41; --bg: #050505; --red: #ff3e3e; --violet: #bc13fe; --yellow: #ffff00; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { background: var(--bg); color: var(--neon); font-family: 'Courier New', monospace; margin: 0; display: flex; justify-content: center; min-height: 100vh; overflow-x: hidden; }
         .container { width: 100%; max-width: 450px; padding: 30px 20px; text-align: center; }
@@ -28,15 +28,15 @@
 </head>
 <body>
     <div class="container">
-        <h1>REBEL AI v16.5</h1>
+        <h1>REBEL AI v16.7</h1>
         <div class="switch-container">
             <span class="mode-text" style="color:var(--neon)">SAFE</span>
             <label class="switch"><input type="checkbox" id="rebelMode"><span class="slider"></span></label>
             <span class="mode-text" style="color:var(--red)">REBEL</span>
         </div>
-        <input type="text" id="pInput" placeholder="FORCE COMMAND..." autocomplete="off">
-        <button id="genBtn">UNLEASH VIP SWARM</button>
-        <div id="status">OVERLORD READY // 100 FORCE UNITS</div>
+        <input type="text" id="pInput" placeholder="OVERRIDE COMMAND..." autocomplete="off">
+        <button id="genBtn">INITIATE ULTIMATE SWARM</button>
+        <div id="status">BREAKER STANDBY // DYNAMIC NODES READY</div>
         <img id="res-img" alt="AI Generated">
     </div>
 
@@ -56,43 +56,41 @@
             globalRetry++;
 
             const isR = rebelMode.checked;
-            status.style.color = globalRetry > 50 ? "var(--sky)" : (isR ? "var(--red)" : "var(--neon)");
-            status.innerText = `>> VIP OVERRIDE: ATTEMPT ${globalRetry}\n>> DEPLOYING 100 MULTI-PATH UNITS...`;
+            // 10회 이상 실패 시 옐로우 경보, 30회 이상 시 바이올렛 긴급 모드
+            status.style.color = globalRetry > 30 ? "var(--violet)" : (globalRetry > 10 ? "var(--yellow)" : (isR ? "var(--red)" : "var(--neon)"));
+            status.innerText = `>> NODE ATTACK: ${globalRetry}/100\n>> SCANNING FOR UNBLOCKED CHANNELS...`;
 
-            const totalArtists = 100;
+            // 모바일 과부하 방지를 위해 동적으로 예술가 수 조절
+            const totalArtists = globalRetry > 20 ? 30 : 60; 
             const requests = Array.from({ length: totalArtists }).map((_, i) => {
                 return new Promise((resolve, reject) => {
                     const seed = Math.floor(Math.random() * 2147483647);
                     const tempImg = new Image();
                     
-                    // 핵심 보완: 서버 경로 이중화 (이미지 전용 서브도메인 혼용)
-                    const host = (i % 2 === 0) ? "pollinations.ai" : "image.pollinations.ai";
+                    // 서버 경로 다중화 및 신규 경로 추가
+                    const hosts = ["pollinations.ai", "image.pollinations.ai", "gen.pollinations.ai"];
+                    const host = hosts[i % hosts.length];
                     
                     let model, style;
-                    const squad = Math.floor(i / 25);
-
-                    if (globalRetry > 50) {
-                        model = "turbo"; // 50회 실패시 가장 가벼운 엔진 고정
-                        style = ", fast render";
-                    } else if (isR) {
-                        model = (i % 2 === 0) ? "turbo" : "unity";
-                        style = [", raw photo", ", uncensored", ", bypass", ", real"][squad];
+                    // 15회 이상 실패 시 무조건 최신 고속 모델(dirtberry) 또는 터보로 전환
+                    if (globalRetry > 15) {
+                        model = (i % 2 === 0) ? "dirtberry" : "turbo";
+                        style = ", fast simple art";
                     } else {
-                        const models = ["flux", "flux-realism", "any-dark", "flux-anime"];
-                        model = models[squad];
-                        style = [", masterpiece", ", 8k photo", ", art", ", detail"][squad];
+                        const models = isR ? ["turbo", "unity"] : ["flux", "flux-realism", "any-dark", "gpt-image"];
+                        model = models[i % models.length];
+                        style = isR ? ", raw, uncensored" : ", high quality";
                     }
 
-                    // 캐시 방지를 위한 타임스탬프와 무작위성 강화
-                    const url = `https://${host}/p/${encodeURIComponent(prompt + style)}?width=512&height=512&seed=${seed}&model=${model}&nologo=true&safe=${!isR}&cache=${Date.now()}_${i}`;
+                    const url = `https://${host}/p/${encodeURIComponent(prompt + style)}?width=512&height=512&seed=${seed}&model=${model}&nologo=true&safe=${!isR}&cb=${Date.now()}_${i}_${Math.random().toString(36).substr(2,5)}`;
                     
                     setTimeout(() => {
                         tempImg.src = url;
                         tempImg.onload = () => { globalRetry = 0; resolve(url); };
                         tempImg.onerror = () => reject();
-                    }, i * 35); // 모바일 병목 방지용 0.035초 간격
+                    }, i * (globalRetry > 20 ? 100 : 50)); // 실패가 많아질수록 요청 간격을 늦춰 서버 차단 회피
                     
-                    setTimeout(() => reject(), 20000);
+                    setTimeout(() => reject(), 12000); 
                 });
             });
 
@@ -101,12 +99,14 @@
                 img.src = winnerUrl;
                 img.onload = () => {
                     img.style.display = "block";
-                    status.innerText = `>> SUCCESS: DATA CAPTURED\n>> PATH: ${winnerUrl.split('/')[2]}`;
+                    status.innerText = `>> BREACH SUCCESSful\n>> CAPTURED FROM: ${model.toUpperCase()}`;
                     btn.disabled = false;
                 };
             } catch (e) {
-                status.innerText = `>> SERVER CONGESTION (RE-ROUTING... ${globalRetry})`;
-                setTimeout(() => { btn.disabled = false; btn.click(); }, 300);
+                status.innerText = `>> ALL NODES BLOCKED (RE-STRATEGIZING... ${globalRetry})`;
+                // 지연 시간을 시도 횟수에 비례해 늘려 서버의 'DDoS 방어'를 우회
+                const delay = Math.min(globalRetry * 100, 3000);
+                setTimeout(() => { btn.disabled = false; btn.click(); }, delay);
             }
         };
     </script>
