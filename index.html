@@ -37,42 +37,46 @@
         if(!prompt) return;
 
         btn.disabled = true;
-        btn.innerText = "MULTICASTING..."; // 여러 서버에 신호 전송 중
-        status.innerText = "SEARCHING STABLE ENGINE...";
+        btn.innerText = "ENGAGING ALL ARTISTS..."; 
+        status.innerText = "PIERCING THROUGH TRAFFIC...";
         img.style.display = "none";
 
-        const seed = Math.floor(Math.random() * 999999);
+        const seed = Math.floor(Math.random() * 9999999);
+        const encodedPrompt = encodeURIComponent(prompt);
         
-        // 🎨 3명의 화가(엔진 경로) 리스트
+        // 🎨 6명의 서로 다른 성격의 화가들 (엔진 경로)
         const artists = [
-            `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=512&height=512&seed=${seed}&model=turbo&nologo=true`,
-            `https://pollinations.ai/p/${encodeURIComponent(prompt)}?width=512&height=512&seed=${seed}&model=flux&nologo=true`,
-            `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=512&height=512&seed=${seed}&nologo=true`
+            `https://image.pollinations.ai/prompt/${encodedPrompt}?width=512&height=512&seed=${seed}&model=turbo&nologo=true`, // 1번: 쾌속 질주
+            `https://pollinations.ai/p/${encodedPrompt}?width=512&height=720&seed=${seed}&model=flux&nologo=true`, // 2번: 고퀄리티 화가
+            `https://image.pollinations.ai/prompt/${encodedPrompt}?width=512&height=512&seed=${seed}&model=extra-model-1&nologo=true`, // 3번: 변칙 공격
+            `https://pollinations.ai/p/${encodedPrompt}?width=640&height=480&seed=${seed}&model=search&nologo=true`, // 4번: 탐색형 화가
+            `https://image.pollinations.ai/prompt/${encodedPrompt}?width=512&height=512&seed=${seed}&nologo=true&enhance=true`, // 5번: 보정 전문가
+            `https://pollinations.ai/p/${encodedPrompt}?width=512&height=512&seed=${seed}&model=unity&nologo=true`  // 6번: 융합형 화가
         ];
 
-        // 랜덤하게 한 명의 화가 선택
+        // 6명 중 한 명을 무작위로 호출
         const selectedUrl = artists[Math.floor(Math.random() * artists.length)];
-        console.log("Selected Artist Path: ", selectedUrl);
 
         img.src = selectedUrl;
 
         img.onload = function() {
             img.style.display = "block";
-            status.innerText = "SUCCESS: ENGINE STABLE.";
+            status.innerText = "SUCCESS: CORE STABLE.";
             btn.disabled = false;
             btn.innerText = "UNLEASH ENGINE";
         };
 
         img.onerror = function() {
-            // 실패 시 즉시 다른 화가에게 재요청 (자동 리라우팅)
-            status.innerHTML = "<span style='color:#ff3e3e;'>ARTIST BUSY. SWITCHING CHANNEL...</span>";
+            // 실패 시 즉시 다른 화가로 전환 (더 빠른 재시도 레이턴시)
+            status.innerHTML = "<span style='color:#ff3e3e;'>ARTIST DOWN. CALLING NEXT...</span>";
             setTimeout(() => {
                 btn.disabled = false;
-                btn.click(); // 다른 화가로 자동 재시도
-            }, 1500);
+                btn.click(); 
+            }, 1000); // 1초만에 바로 다른 화가 호출
         };
     };
 </script>
+
 
 
 
