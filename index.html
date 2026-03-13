@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>REBEL AI v16.0 AUTO-BALANCER</title>
+    <title>REBEL AI v16.5 VIP OVERLORD</title>
     <style>
-        :root { --neon: #00ff41; --bg: #050505; --red: #ff3e3e; --violet: #bc13fe; }
+        :root { --neon: #00ff41; --bg: #050505; --red: #ff3e3e; --sky: #00d4ff; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { background: var(--bg); color: var(--neon); font-family: 'Courier New', monospace; margin: 0; display: flex; justify-content: center; min-height: 100vh; overflow-x: hidden; }
         .container { width: 100%; max-width: 450px; padding: 30px 20px; text-align: center; }
@@ -28,15 +28,15 @@
 </head>
 <body>
     <div class="container">
-        <h1>REBEL AI v16.0</h1>
+        <h1>REBEL AI v16.5</h1>
         <div class="switch-container">
             <span class="mode-text" style="color:var(--neon)">SAFE</span>
             <label class="switch"><input type="checkbox" id="rebelMode"><span class="slider"></span></label>
             <span class="mode-text" style="color:var(--red)">REBEL</span>
         </div>
-        <input type="text" id="pInput" placeholder="COMMANDING LEGION..." autocomplete="off">
-        <button id="genBtn">UNLEASH BALANCED SWARM</button>
-        <div id="status">SYSTEM READY // 100 UNITS ACTIVE</div>
+        <input type="text" id="pInput" placeholder="FORCE COMMAND..." autocomplete="off">
+        <button id="genBtn">UNLEASH VIP SWARM</button>
+        <div id="status">OVERLORD READY // 100 FORCE UNITS</div>
         <img id="res-img" alt="AI Generated">
     </div>
 
@@ -55,46 +55,44 @@
             img.style.display = "none";
             globalRetry++;
 
-            const isBalancing = globalRetry > 50;
             const isR = rebelMode.checked;
-            
-            // 상태 표시 업데이트
-            status.style.color = isBalancing ? "var(--violet)" : (isR ? "var(--red)" : "var(--neon)");
-            status.innerText = isBalancing ? 
-                `>> CRITICAL: AUTO-BALANCING ACTIVE\nMAPPING LOW-LOAD NODES [TRY: ${globalRetry}]` : 
-                `>> SWARM DEPLOYED: 100 STRATEGIC UNITS\nSEARCHING OPTIMAL NODE [TRY: ${globalRetry}]`;
+            status.style.color = globalRetry > 50 ? "var(--sky)" : (isR ? "var(--red)" : "var(--neon)");
+            status.innerText = `>> VIP OVERRIDE: ATTEMPT ${globalRetry}\n>> DEPLOYING 100 MULTI-PATH UNITS...`;
 
             const totalArtists = 100;
             const requests = Array.from({ length: totalArtists }).map((_, i) => {
                 return new Promise((resolve, reject) => {
                     const seed = Math.floor(Math.random() * 2147483647);
                     const tempImg = new Image();
+                    
+                    // 핵심 보완: 서버 경로 이중화 (이미지 전용 서브도메인 혼용)
+                    const host = (i % 2 === 0) ? "pollinations.ai" : "image.pollinations.ai";
+                    
                     let model, style;
                     const squad = Math.floor(i / 25);
 
-                    if (isBalancing) {
-                        // 저부하 모드: 가장 가벼운 엔진(turbo/unity)으로 강제 전환
-                        model = (i % 2 === 0) ? "turbo" : "unity";
-                        style = isR ? ", uncensored, raw" : ", high quality, fast";
+                    if (globalRetry > 50) {
+                        model = "turbo"; // 50회 실패시 가장 가벼운 엔진 고정
+                        style = ", fast render";
                     } else if (isR) {
                         model = (i % 2 === 0) ? "turbo" : "unity";
-                        style = [", raw photo", ", uncensored", ", bypass", ", gritty"][squad];
+                        style = [", raw photo", ", uncensored", ", bypass", ", real"][squad];
                     } else {
                         const models = ["flux", "flux-realism", "any-dark", "flux-anime"];
-                        const styles = [", masterpiece", ", photorealistic", ", artistic", ", intricate"];
                         model = models[squad];
-                        style = styles[squad];
+                        style = [", masterpiece", ", 8k photo", ", art", ", detail"][squad];
                     }
 
-                    const url = `https://pollinations.ai/p/${encodeURIComponent(prompt + style)}?width=512&height=512&seed=${seed}&model=${model}&nologo=true&safe=${!isR}&t=${Date.now()}_${i}`;
+                    // 캐시 방지를 위한 타임스탬프와 무작위성 강화
+                    const url = `https://${host}/p/${encodeURIComponent(prompt + style)}?width=512&height=512&seed=${seed}&model=${model}&nologo=true&safe=${!isR}&cache=${Date.now()}_${i}`;
                     
                     setTimeout(() => {
                         tempImg.src = url;
                         tempImg.onload = () => { globalRetry = 0; resolve(url); };
                         tempImg.onerror = () => reject();
-                    }, i * (isBalancing ? 20 : 40));
+                    }, i * 35); // 모바일 병목 방지용 0.035초 간격
                     
-                    setTimeout(() => reject(), isBalancing ? 8000 : 25000);
+                    setTimeout(() => reject(), 20000);
                 });
             });
 
@@ -103,11 +101,11 @@
                 img.src = winnerUrl;
                 img.onload = () => {
                     img.style.display = "block";
-                    status.innerText = `>> SUCCESS: NODE CAPTURED\n${isBalancing ? '[LOW-LOAD ENGINE]' : '[ELITE ENGINE]'}`;
+                    status.innerText = `>> SUCCESS: DATA CAPTURED\n>> PATH: ${winnerUrl.split('/')[2]}`;
                     btn.disabled = false;
                 };
             } catch (e) {
-                status.innerText = `>> CONGESTION DETECTED\nAUTO-RESCANNIG... (${globalRetry})`;
+                status.innerText = `>> SERVER CONGESTION (RE-ROUTING... ${globalRetry})`;
                 setTimeout(() => { btn.disabled = false; btn.click(); }, 300);
             }
         };
