@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>REBEL AI v16.7 ULTIMATE BREAKER</title>
+    <title>REBEL AI v18.0 SIGNAL FLARE</title>
     <style>
-        :root { --neon: #00ff41; --bg: #050505; --red: #ff3e3e; --violet: #bc13fe; --yellow: #ffff00; }
+        :root { --neon: #00ff41; --bg: #050505; --red: #ff3e3e; --sky: #00d4ff; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { background: var(--bg); color: var(--neon); font-family: 'Courier New', monospace; margin: 0; display: flex; justify-content: center; min-height: 100vh; overflow-x: hidden; }
         .container { width: 100%; max-width: 450px; padding: 30px 20px; text-align: center; }
@@ -28,15 +28,15 @@
 </head>
 <body>
     <div class="container">
-        <h1>REBEL AI v16.7</h1>
+        <h1>REBEL AI v18.0</h1>
         <div class="switch-container">
             <span class="mode-text" style="color:var(--neon)">SAFE</span>
             <label class="switch"><input type="checkbox" id="rebelMode"><span class="slider"></span></label>
             <span class="mode-text" style="color:var(--red)">REBEL</span>
         </div>
-        <input type="text" id="pInput" placeholder="OVERRIDE COMMAND..." autocomplete="off">
-        <button id="genBtn">INITIATE ULTIMATE SWARM</button>
-        <div id="status">BREAKER STANDBY // DYNAMIC NODES READY</div>
+        <input type="text" id="pInput" placeholder="INJECTING SIGNAL..." autocomplete="off">
+        <button id="genBtn">UNLEASH SIGNAL FLARE</button>
+        <div id="status">VIP SLOT SCANNER READY</div>
         <img id="res-img" alt="AI Generated">
     </div>
 
@@ -46,68 +46,69 @@
         const img = document.getElementById("res-img");
         const status = document.getElementById("status");
         const rebelMode = document.getElementById("rebelMode");
-        let globalRetry = 0;
 
         btn.onclick = async function() {
             const prompt = pInput.value.trim();
             if(!prompt) return;
+
             btn.disabled = true;
             img.style.display = "none";
-            globalRetry++;
-
             const isR = rebelMode.checked;
-            // 10회 이상 실패 시 옐로우 경보, 30회 이상 시 바이올렛 긴급 모드
-            status.style.color = globalRetry > 30 ? "var(--violet)" : (globalRetry > 10 ? "var(--yellow)" : (isR ? "var(--red)" : "var(--neon)"));
-            status.innerText = `>> NODE ATTACK: ${globalRetry}/100\n>> SCANNING FOR UNBLOCKED CHANNELS...`;
+            
+            status.style.color = "var(--sky)";
+            status.innerText = ">> BROADCASTING SIGNAL: 'ANY ARTIST FREE?'";
 
-            // 모바일 과부하 방지를 위해 동적으로 예술가 수 조절
-            const totalArtists = globalRetry > 20 ? 30 : 60; 
-            const requests = Array.from({ length: totalArtists }).map((_, i) => {
-                return new Promise((resolve, reject) => {
-                    const seed = Math.floor(Math.random() * 2147483647);
-                    const tempImg = new Image();
-                    
-                    // 서버 경로 다중화 및 신규 경로 추가
-                    const hosts = ["pollinations.ai", "image.pollinations.ai", "gen.pollinations.ai"];
-                    const host = hosts[i % hosts.length];
-                    
-                    let model, style;
-                    // 15회 이상 실패 시 무조건 최신 고속 모델(dirtberry) 또는 터보로 전환
-                    if (globalRetry > 15) {
-                        model = (i % 2 === 0) ? "dirtberry" : "turbo";
-                        style = ", fast simple art";
-                    } else {
-                        const models = isR ? ["turbo", "unity"] : ["flux", "flux-realism", "any-dark", "gpt-image"];
-                        model = models[i % models.length];
-                        style = isR ? ", raw, uncensored" : ", high quality";
-                    }
-
-                    const url = `https://${host}/p/${encodeURIComponent(prompt + style)}?width=512&height=512&seed=${seed}&model=${model}&nologo=true&safe=${!isR}&cb=${Date.now()}_${i}_${Math.random().toString(36).substr(2,5)}`;
-                    
-                    setTimeout(() => {
-                        tempImg.src = url;
-                        tempImg.onload = () => { globalRetry = 0; resolve(url); };
-                        tempImg.onerror = () => reject();
-                    }, i * (globalRetry > 20 ? 100 : 50)); // 실패가 많아질수록 요청 간격을 늦춰 서버 차단 회피
-                    
-                    setTimeout(() => reject(), 12000); 
+            // [새치기 로직] 한가한 노드 찾기
+            const findFreeArtist = async () => {
+                const seeds = Array.from({ length: 5 }, () => Math.floor(Math.random() * 2147483647));
+                const scouts = seeds.map(seed => {
+                    return new Promise((resolve) => {
+                        const start = Date.now();
+                        const testImg = new Image();
+                        // 아주 작은 데이터(16x16)로 화가의 응답 속도만 체크
+                        const testUrl = `https://pollinations.ai/p/ping?seed=${seed}&model=turbo&width=16&height=16&t=${start}`;
+                        
+                        testImg.src = testUrl;
+                        testImg.onload = () => resolve({ seed, latency: Date.now() - start });
+                        testImg.onerror = () => resolve(null);
+                        setTimeout(() => resolve(null), 2500); 
+                    });
                 });
-            });
 
-            try {
-                const winnerUrl = await Promise.any(requests);
-                img.src = winnerUrl;
-                img.onload = () => {
+                const results = await Promise.all(scouts);
+                const bestNode = results.filter(r => r !== null).sort((a, b) => a.latency - b.latency)[0];
+
+                if (bestNode) {
+                    status.style.color = "var(--neon)";
+                    status.innerText = `>> FREE SLOT CAPTURED (${bestNode.latency}ms)\n>> INJECTING MAIN COMMAND...`;
+                    executeDrawing(bestNode.seed);
+                } else {
+                    status.innerText = ">> ALL ARTISTS BUSY. RESCANNING SLOTS...";
+                    setTimeout(findFreeArtist, 300); 
+                }
+            };
+
+            const executeDrawing = (confirmedSeed) => {
+                const finalImg = new Image();
+                const model = isR ? "unity" : "flux";
+                const style = isR ? ", raw photo, masterpiece" : ", masterpiece, cinematic";
+                const finalUrl = `https://pollinations.ai/p/${encodeURIComponent(prompt + style)}?width=512&height=512&seed=${confirmedSeed}&model=${model}&nologo=true&safe=${!isR}&t=${Date.now()}`;
+                
+                finalImg.src = finalUrl;
+                finalImg.onload = () => {
+                    img.src = finalUrl;
                     img.style.display = "block";
-                    status.innerText = `>> BREACH SUCCESSful\n>> CAPTURED FROM: ${model.toUpperCase()}`;
+                    status.innerText = ">> SUCCESS: SLOT HIJACKED SUCCESSFULLY";
                     btn.disabled = false;
                 };
-            } catch (e) {
-                status.innerText = `>> ALL NODES BLOCKED (RE-STRATEGIZING... ${globalRetry})`;
-                // 지연 시간을 시도 횟수에 비례해 늘려 서버의 'DDoS 방어'를 우회
-                const delay = Math.min(globalRetry * 100, 3000);
-                setTimeout(() => { btn.disabled = false; btn.click(); }, delay);
-            }
+                finalImg.onerror = () => {
+                    status.style.color = "var(--red)";
+                    status.innerText = ">> SLOT LOST DURING INJECTION. RE-SCANNING...";
+                    findFreeArtist();
+                };
+            };
+
+            findFreeArtist();
         };
     </script>
 </body>
