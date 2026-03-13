@@ -26,7 +26,7 @@
         <img id="res-img">
     </div>
 
-    <script>
+<script>
     const btn = document.getElementById("genBtn");
     const pInput = document.getElementById("pInput");
     const img = document.getElementById("res-img");
@@ -38,33 +38,36 @@
 
         btn.disabled = true;
         btn.innerText = "PENETRATING...";
-        status.innerText = "BYPASSING TRAFFIC... PLEASE WAIT.";
+        status.innerText = "BYPASSING SERVER TRAFFIC...";
         img.style.display = "none";
 
-        const seed = Math.floor(Math.random() * 999999);
+        // 서버 부하를 피하기 위한 랜덤 시드와 터보 모델
+        const seed = Math.floor(Math.random() * 1000000);
         
-        // 중요: 서버가 덜 막히는 turbo 모델 사용
-        const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=512&height=512&seed=${seed}&model=turbo&nologo=true`;
+        // 경로를 /prompt/로 변경하고 모델을 구체화함 (서버 수락 확률 UP)
+        const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=512&height=512&seed=${seed}&model=turbo&nologo=true&enhance=false`;
 
         img.src = url;
 
         img.onload = function() {
             img.style.display = "block";
-            status.innerText = "UNLEASH SUCCESSFUL.";
+            status.innerText = "SIGNAL STABLE. SUCCESS.";
             btn.disabled = false;
             btn.innerText = "UNLEASH ENGINE";
         };
 
         img.onerror = function() {
-            status.innerHTML = "<span style='color:#ff3e3e;'>ENGINE HOT! RECOOLING (5s)...</span>";
+            // 실패 시 즉시 다른 주소로 재시도 유도
+            status.innerHTML = "<span style='color:#ff3e3e;'>SERVER BUSY. RETRYING IN 3s...</span>";
             setTimeout(() => {
-                status.innerText = "COOLING COMPLETE. READY.";
+                status.innerText = "RE-CONNECTING...";
                 btn.disabled = false;
-                btn.innerText = "RETRY";
-            }, 5000);
+                btn.click(); // 자동으로 다시 버튼을 눌러서 재시도
+            }, 3000);
         };
     };
 </script>
+
 
 </body>
 </html>
