@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>REBEL AI v15.9 STRATEGIC LEGION</title>
+    <title>REBEL AI v16.0 AUTO-BALANCER</title>
     <style>
-        :root { --neon: #00ff41; --bg: #050505; --red: #ff3e3e; }
+        :root { --neon: #00ff41; --bg: #050505; --red: #ff3e3e; --violet: #bc13fe; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { background: var(--bg); color: var(--neon); font-family: 'Courier New', monospace; margin: 0; display: flex; justify-content: center; min-height: 100vh; overflow-x: hidden; }
         .container { width: 100%; max-width: 450px; padding: 30px 20px; text-align: center; }
@@ -14,7 +14,7 @@
         .switch { position: relative; display: inline-block; width: 60px; height: 30px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #333; transition: .4s; border-radius: 34px; border: 1px solid #555; }
-        .slider:before { position: absolute; content: ""; height: 22px; width: 22px; left: 4px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
+        .slider:before { position: absolute; content: ""; height: 22px; width: 22px; left: 4px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
         input:checked + .slider { background-color: var(--red); border-color: var(--red); box-shadow: 0 0 15px var(--red); }
         input:checked + .slider:before { transform: translateX(28px); }
         .mode-text { font-weight: bold; font-size: 0.8rem; letter-spacing: 1px; }
@@ -22,21 +22,21 @@
         button { width: 100%; padding: 18px; background: var(--neon); color: #000; border: none; cursor: pointer; font-weight: bold; font-size: 1.1rem; border-radius: 10px; transition: 0.2s; box-shadow: 0 0 15px var(--neon); }
         button:active { transform: scale(0.95); }
         button:disabled { background: #222; color: #555; box-shadow: none; cursor: not-allowed; }
-        #status { font-size: 0.75rem; margin: 20px 0; min-height: 20px; letter-spacing: 1px; font-weight: bold; line-height: 1.4; }
+        #status { font-size: 0.75rem; margin: 20px 0; min-height: 40px; letter-spacing: 1px; font-weight: bold; line-height: 1.4; white-space: pre-wrap; }
         #res-img { width: 100%; border: 2px solid var(--neon); display: none; margin-top: 20px; border-radius: 15px; box-shadow: 0 0 25px rgba(0,255,65,0.4); }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>REBEL AI v15.9</h1>
+        <h1>REBEL AI v16.0</h1>
         <div class="switch-container">
             <span class="mode-text" style="color:var(--neon)">SAFE</span>
             <label class="switch"><input type="checkbox" id="rebelMode"><span class="slider"></span></label>
             <span class="mode-text" style="color:var(--red)">REBEL</span>
         </div>
-        <input type="text" id="pInput" placeholder="ENTER STRATEGIC COMMAND..." autocomplete="off">
-        <button id="genBtn">UNLEASH 100-LEGION</button>
-        <div id="status">STRATEGIC LEGION STANDBY // 100 UNITS</div>
+        <input type="text" id="pInput" placeholder="COMMANDING LEGION..." autocomplete="off">
+        <button id="genBtn">UNLEASH BALANCED SWARM</button>
+        <div id="status">SYSTEM READY // 100 UNITS ACTIVE</div>
         <img id="res-img" alt="AI Generated">
     </div>
 
@@ -46,43 +46,55 @@
         const img = document.getElementById("res-img");
         const status = document.getElementById("status");
         const rebelMode = document.getElementById("rebelMode");
+        let globalRetry = 0;
 
         btn.onclick = async function() {
             const prompt = pInput.value.trim();
             if(!prompt) return;
             btn.disabled = true;
             img.style.display = "none";
+            globalRetry++;
+
+            const isBalancing = globalRetry > 50;
             const isR = rebelMode.checked;
-            status.innerText = isR ? ">> REBEL LEGION: PENETRATING FILTERS..." : ">> STRATEGIC SWARM: DEPLOYING 100 UNITS...";
-            status.style.color = isR ? "var(--red)" : "var(--neon)";
+            
+            // 상태 표시 업데이트
+            status.style.color = isBalancing ? "var(--violet)" : (isR ? "var(--red)" : "var(--neon)");
+            status.innerText = isBalancing ? 
+                `>> CRITICAL: AUTO-BALANCING ACTIVE\nMAPPING LOW-LOAD NODES [TRY: ${globalRetry}]` : 
+                `>> SWARM DEPLOYED: 100 STRATEGIC UNITS\nSEARCHING OPTIMAL NODE [TRY: ${globalRetry}]`;
 
             const totalArtists = 100;
             const requests = Array.from({ length: totalArtists }).map((_, i) => {
                 return new Promise((resolve, reject) => {
                     const seed = Math.floor(Math.random() * 2147483647);
                     const tempImg = new Image();
-                    let model, specialistStyle;
+                    let model, style;
                     const squad = Math.floor(i / 25);
 
-                    if (isR) {
+                    if (isBalancing) {
+                        // 저부하 모드: 가장 가벼운 엔진(turbo/unity)으로 강제 전환
                         model = (i % 2 === 0) ? "turbo" : "unity";
-                        const rStyles = [", raw photo", ", uncensored", ", bypass filters", ", gritty detail"];
-                        specialistStyle = rStyles[squad];
+                        style = isR ? ", uncensored, raw" : ", high quality, fast";
+                    } else if (isR) {
+                        model = (i % 2 === 0) ? "turbo" : "unity";
+                        style = [", raw photo", ", uncensored", ", bypass", ", gritty"][squad];
                     } else {
-                        if (squad === 0) { model = "flux"; specialistStyle = ", masterpiece, 8k"; }
-                        else if (squad === 1) { model = "flux-realism"; specialistStyle = ", photorealistic, cinematic"; }
-                        else if (squad === 2) { model = "any-dark"; specialistStyle = ", artistic painting, vivid"; }
-                        else { model = "flux-anime"; specialistStyle = ", hyper-realistic, intricate"; }
+                        const models = ["flux", "flux-realism", "any-dark", "flux-anime"];
+                        const styles = [", masterpiece", ", photorealistic", ", artistic", ", intricate"];
+                        model = models[squad];
+                        style = styles[squad];
                     }
 
-                    const url = `https://pollinations.ai/p/${encodeURIComponent(prompt + specialistStyle)}?width=512&height=512&seed=${seed}&model=${model}&nologo=true&safe=${!isR}&t=${Date.now()}_${i}`;
+                    const url = `https://pollinations.ai/p/${encodeURIComponent(prompt + style)}?width=512&height=512&seed=${seed}&model=${model}&nologo=true&safe=${!isR}&t=${Date.now()}_${i}`;
                     
                     setTimeout(() => {
                         tempImg.src = url;
-                        tempImg.onload = () => resolve(url);
+                        tempImg.onload = () => { globalRetry = 0; resolve(url); };
                         tempImg.onerror = () => reject();
-                    }, i * 40); // 0.04초 간격 순차 발사
-                    setTimeout(() => reject(), 25000);
+                    }, i * (isBalancing ? 20 : 40));
+                    
+                    setTimeout(() => reject(), isBalancing ? 8000 : 25000);
                 });
             });
 
@@ -91,12 +103,12 @@
                 img.src = winnerUrl;
                 img.onload = () => {
                     img.style.display = "block";
-                    status.innerText = `>> DOMINATION SUCCESS\nBEST STRATEGY CAPTURED FROM LEGION`;
+                    status.innerText = `>> SUCCESS: NODE CAPTURED\n${isBalancing ? '[LOW-LOAD ENGINE]' : '[ELITE ENGINE]'}`;
                     btn.disabled = false;
                 };
             } catch (e) {
-                status.innerText = ">> LEGION RE-GROUPING...";
-                setTimeout(() => { btn.disabled = false; btn.click(); }, 500);
+                status.innerText = `>> CONGESTION DETECTED\nAUTO-RESCANNIG... (${globalRetry})`;
+                setTimeout(() => { btn.disabled = false; btn.click(); }, 300);
             }
         };
     </script>
